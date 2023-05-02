@@ -1,5 +1,5 @@
 export const GameEvent = {
-    STOP: new Event('stop'),
+    PAUSE: new Event('pause'),
     START: new Event('start'),
     GAMEOVER: new Event('gameover')
 };

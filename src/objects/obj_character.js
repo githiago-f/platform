@@ -22,6 +22,7 @@ export const Character = {
         this._sprite.x = this._x;
         this._sprite.y = this._y;
         this.draw();
+        return this;
     },
 
     draw() {
