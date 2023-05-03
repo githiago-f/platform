@@ -18,15 +18,15 @@ async function bootstrap() {
     await Character.init(app.renderer.width / 2, app.renderer.height / 2);
 
     const colors = [
-        'red', 
-        'blue', 
-        'green', 
-        'yellow', 
-        'pink', 
-        'white', 
-        'black', 
-        'brown', 
-        'cyan'
+        0xff0000, 
+        0x0000ff, 
+        0x00ff00,
+        0xe8cd00,
+        0x00e8d9,
+        0x020ee6,
+        0xa103fc,
+        0xdb09b1,
+        0x9e0012
     ];
     
     for(let i = 0; i < 10; i++) {
@@ -36,18 +36,19 @@ async function bootstrap() {
         groundElement.random_x();
         elements.push(groundElement);
         app.stage.addChild(groundElement.rect);
-        if(initial_y < positions.last_position) {
-            positions.last_position = initial_y;
-        }
     }
 
     app.stage.addChild(Character.sprite);
-    app.stop();
     document.body.appendChild(app.view);
+    app.stop();
+
+    const getLastPosition = () => Math.min(...elements.map(i => i.position.y));
+
     app.ticker.add(() => {
         // rerender all objects
         Character.draw();
         elements.forEach(i => i.draw());
+        positions.last_position = getLastPosition();
     });
     
     events.addEventListener('start', () => {
