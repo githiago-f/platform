@@ -1,20 +1,45 @@
 import * as PIXI from 'pixi.js';
 
-import { screen_size } from "../constants/sizes";
+import { block_size, screen_size } from "../constants/sizes";
 import { events } from "../events/eventcenter";
 import { GameEvent } from "../events/events";
 import { Character } from "../objects/obj_character";
 import { State, gameState } from "../states/game_state";
 import { Ground } from '../objects/obj_ground';
+import { positions } from '../constants/position';
 
-let objects = new Set();
+const elements = [];
 async function bootstrap() {
-    const app = new PIXI.Application({ ...screen_size, backgroundColor: '#110d0d' });
+    const app = new PIXI.Application({ 
+        ...screen_size, 
+        backgroundColor: '#110d0d' 
+    });
     
     await Character.init(app.renderer.width / 2, app.renderer.height / 2);
+
+    const colors = [
+        'red', 
+        'blue', 
+        'green', 
+        'yellow', 
+        'pink', 
+        'white', 
+        'black', 
+        'brown', 
+        'cyan'
+    ];
     
-    const groundElement = await Ground().init(1, 6);
-    app.stage.addChild(groundElement.graphic);
+    for(let i = 0; i < 10; i++) {
+        const color = colors[i];
+        const initial_y = -(i * block_size.height * 4);
+        const groundElement = Ground(1, 6, 0, initial_y).init(color);
+        groundElement.random_x();
+        elements.push(groundElement);
+        app.stage.addChild(groundElement.rect);
+        if(initial_y < positions.last_position) {
+            positions.last_position = initial_y;
+        }
+    }
 
     app.stage.addChild(Character.sprite);
     app.stop();
@@ -22,6 +47,7 @@ async function bootstrap() {
     app.ticker.add(() => {
         // rerender all objects
         Character.draw();
+        elements.forEach(i => i.draw());
     });
     
     events.addEventListener('start', () => {

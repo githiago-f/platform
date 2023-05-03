@@ -3,7 +3,12 @@ export const character_size = {
     height: 64
 };
 
+export const block_size = {
+    height: character_size.height / 2,
+    width: character_size.width / 2
+}
+
 export const screen_size =  {
-    width: 1280,
+    width: block_size.width * 28,
     height: 640
 };
