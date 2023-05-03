@@ -21,11 +21,11 @@ export const Character = {
         this._sprite = new Sprite(texture);
         this._sprite.x = this._x;
         this._sprite.y = this._y;
-        this.draw();
+        this.draw([]);
         return this;
     },
 
-    draw() {
+    draw(elements) {
         if(this._going_left) {
             this._x_speed -= character_size.width * 0.015;
         }
@@ -38,31 +38,40 @@ export const Character = {
 
         // air friction
         this._x_speed *= 0.9;
-        this.fall();
+        this.fall(elements);
 
         this._sprite.x = this._x;
         this._sprite.y = this._y;
     },
     jump() {
         if(!this._jumping) {
-            this._y_speed -= character_size.height * .7;
+            this._y_speed -= character_size.height * .8;
             this._jumping = true;
         }
     },
-    fall() {
+    fall(elements) {
         this._y_speed += character_size.height * 0.015;
         this._y += this._y_speed;
         // add friction
         this._y_speed *= 0.9;
-        this.colide();
-    },
-    colide() {
-        const the_floor = screen_size.height - character_size.height + 16;
-        if(this._y > the_floor) {
+        const collided = elements.filter(this.collide_element.bind(this)).pop();
+        const floor = this.collide_floor();
+        console.log(collided);
+        if(floor) {
             this._jumping = false;
-            this._y = the_floor;
+            this._y = floor;
             this._y_speed = 0;
         }
+    },
+    collide_floor() {
+        const the_floor = screen_size.height - character_size.height + 16;
+        return this._y > the_floor ? the_floor : 0;
+    },
+    collide_element(brick) {
+        return this._x > brick.position.x && 
+            this._x < brick.position.x + brick.width && 
+            this._y > brick.position.y && 
+            this._y < brick.position.y + brick.height;
     },
     get sprite() { return this._sprite; }
 }

@@ -29,26 +29,29 @@ async function bootstrap() {
         0x9e0012
     ];
     
+    let initial_y;
+    const four_blocks = block_size.height * 4;
     for(let i = 0; i < 10; i++) {
         const color = colors[i];
-        const initial_y = -(i * block_size.height * 4);
+        initial_y = -(i * four_blocks);
         const groundElement = Ground(1, 6, 0, initial_y).init(color);
         groundElement.random_x();
         elements.push(groundElement);
         app.stage.addChild(groundElement.rect);
     }
 
+
+    positions.last_position = initial_y - screen_size.height;
+    console.log({ initial_y, last_position: positions.last_position, four_blocks });
+
     app.stage.addChild(Character.sprite);
     document.body.appendChild(app.view);
     app.stop();
 
-    const getLastPosition = () => Math.min(...elements.map(i => i.position.y));
-
     app.ticker.add(() => {
         // rerender all objects
-        Character.draw();
+        Character.draw(elements);
         elements.forEach(i => i.draw());
-        positions.last_position = getLastPosition();
     });
     
     events.addEventListener('start', () => {
