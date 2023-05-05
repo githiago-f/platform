@@ -29,7 +29,7 @@ async function bootstrap() {
         0x9e0012
     ];
     
-    let initial_y;
+    let initial_y = 0;
     const four_blocks = block_size.height * 4;
     for(let i = 0; i < 10; i++) {
         const color = colors[i];
@@ -40,9 +40,7 @@ async function bootstrap() {
         app.stage.addChild(groundElement.rect);
     }
 
-
     positions.last_position = initial_y - screen_size.height;
-    console.log({ initial_y, last_position: positions.last_position, four_blocks });
 
     app.stage.addChild(Character.sprite);
     document.body.appendChild(app.view);
