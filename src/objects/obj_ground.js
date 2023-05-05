@@ -29,12 +29,13 @@ export const Ground = (height=1, width=1, x=0, y=0) => ({
         this._y_speed += this._height * 0.005;
         this._y += this._y_speed;
         this._y_speed *= 0.9;
-        this.colide();
+        this.collide_floor();
     },
-    colide() {
+    collide_floor() {
         const the_floor = screen_size.height;
-        if(this.position.y > the_floor) {
-            this._y = positions.last_position;
+        // resets to last queue position and a random x value
+        if((this.position.y - this.height) > the_floor) {
+            this._y = positions.last_position; 
             this.random_x();
         }
     },
@@ -43,13 +44,13 @@ export const Ground = (height=1, width=1, x=0, y=0) => ({
     },
 
     get position() {
-        return Object.freeze({ x: this._x, y: this._y + y });
+        return Object.freeze({ x: this._x + x, y: ((this._y + y) - this.height) });
     },
 
     get width() {
         return this._width;
     },
-    get heigth() {
+    get height() {
         return this._height;
     },
 
