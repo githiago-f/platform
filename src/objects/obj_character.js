@@ -12,6 +12,8 @@ export const Character = {
      * @type {Sprite}
      */
     _sprite: null,
+
+    _score: 0,
     
     async init(x = 0, y = 0) {
         this._x = x;
@@ -25,11 +27,10 @@ export const Character = {
         return this;
     },
 
-    draw(elements) {
+    draw(bricks) {
         if(this._going_left) {
             this._x_speed -= character_size.width * 0.015;
         }
-
         if(this._going_right) {
             this._x_speed += character_size.width * 0.015;
         }
@@ -38,7 +39,8 @@ export const Character = {
 
         // air friction
         this._x_speed *= 0.9;
-        this.fall(elements);
+
+        this.fall(bricks);
 
         this._sprite.x = this._x;
         this._sprite.y = this._y;
@@ -49,29 +51,37 @@ export const Character = {
             this._jumping = true;
         }
     },
-    fall(elements) {
+    fall(bricks) {
         this._y_speed += character_size.height * 0.015;
         this._y += this._y_speed;
         // add friction
         this._y_speed *= 0.9;
-        const collided = elements.filter(this.collide_element.bind(this)).pop();
-        const floor = this.collide_floor();
-        console.log(collided);
-        if(floor) {
-            this._jumping = false;
-            this._y = floor;
-            this._y_speed = 0;
-        }
+        this.collide_floor();
+        bricks.forEach(brick => this.collide_brick(brick));
     },
     collide_floor() {
         const the_floor = screen_size.height - character_size.height + 16;
-        return this._y > the_floor ? the_floor : 0;
+        if(this._y > the_floor) {
+            this._jumping = false;
+            this._y = the_floor;
+            this._y_speed = 0;
+            this._score = 0;
+        }
     },
-    collide_element(brick) {
-        return this._x > brick.position.x && 
-            this._x < brick.position.x + brick.width && 
-            this._y > brick.position.y && 
-            this._y < brick.position.y + brick.height;
+    collide_brick(brick) {
+        const brick_x = brick.position.x - 40,
+            brick_y = brick.position.y - 16;
+        const collided = this._x > brick_x && 
+            this._x < brick_x + brick.width &&
+            this._y > brick_y && 
+            this._y < brick_y + brick.height;
+        if(collided) {
+            this._jumping = false;
+            this._y = brick_y;
+            this._y_speed = 0;
+            this._score += 1;
+        }
     },
+    get score() { return this._score; },
     get sprite() { return this._sprite; }
 }
